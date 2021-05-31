@@ -21,12 +21,15 @@ async def on_ready():
     #Listening -> activity = discord.Activity(type=discord.ActivityType.listening, name="!help")
     #Watcing -> activity = discord.Activity(type=discord.ActivityType.watching, name="ニオ programming")
     activity = activity = discord.Game(name="幫ニオ做家事的遊戲")
-    await client.change_presence(status=discord.Status.idle, activity=activity)
-    
+    #discord.Status.dnd discord.Status.idle discord.Status.online
+    await client.change_presence(status=discord.Status.online, activity=activity)
+
 
 #main
 @client.event
 async def on_message(msg):
+    
+    activity = activity = discord.Game(name="幫ニオ做家事的遊戲")
 
     if msg.author==client.user:
         return
@@ -35,6 +38,10 @@ async def on_message(msg):
         await msg.channel.send('hi')
 
     if msg.content.startswith(f'{prefix}nh'):
+        if msg.channel.id!=844928711252770837:
+            await msg.delete()
+            await msg.channel.send("speed limited qqq",delete_after=3)
+            return
         num=msg.content.split(' ')
         await msg.channel.send('file fetching... please wait...',delete_after=5)
         os.system(f'./nhcrawl.sh -n {num[1]} -l 1')
@@ -45,6 +52,21 @@ async def on_message(msg):
         await msg.channel.send(file=tmpfile,embed=nhembed)
         os.system(f'rm -rf ./temphtml/{num[1]}')
 
+    if msg.content.startswith(f'{prefix}{prefix}help'):
+        commands="//help => show this message\n/nh {booknumber} => get nhentai manga"
+        helpemb=discord.Embed(title="list of commands",color=0xFFC0CB,description=commands)
+        await msg.channel.send(embed=helpemb)
+
+
+    if msg.content.startswith(f'{prefix}跟我打炮'):
+        await msg.channel.send("No")
+
+    if msg.content.startswith(f'{prefix}admin'):
+        if msg.author.id!=599832311747444746:
+            await msg.channel.send("You are not admin, reported")
+            #msg.delete()
+            return
+        await msg.channel.send("confirmed")
 
     if msg.channel.id != 846392215424598057:
         backstagech = client.get_channel(846392215424598057)
@@ -52,5 +74,6 @@ async def on_message(msg):
         nowtime = now.strftime("%H:%M:%S")
         print(f'\n{nowtime} - {msg.author} - sent {msg.content}')
         await backstagech.send(f'\n{nowtime} - {msg.author} - sent {msg.content}')
+
 
 client.run(token)
